@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy New Year dari Shinnei ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <style>
+      /* Animasi untuk musik pulsing */
+      @keyframes musicPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+      }
+      
+      .music-pulse {
+        animation: musicPulse 2s infinite;
+      }
+    </style>
+  </head>
+
+  <body
+    style="
+      background-image: url(https://i.pinimg.com/736x/dc/04/ed/dc04ed6d9e3377b0ac2f0da6e5bfed58.jpg);
+      background-size: cover;
+      background-position: center;
+    "
+    class="flex justify-center items-center min-h-screen p-4"
+  >
+    <!-- Audio Player -->
+    <audio id="background-music" preload="auto" loop>
+      <source src="music/beabadoobee_-_Glue_Song_feat._Clairo_(mp3.pm).mp3" type="audio/mpeg">
+      <source src="music/beabadoobee_-_Glue_Song_feat._Clairo_(mp3.pm).ogg" type="audio/ogg">
+      Your browser does not support the audio element.
+    </audio>
+    
+    <!-- Music Controls (akan muncul setelah interaksi) -->
+    <div id="music-controls" class="fixed top-4 right-4 z-50 opacity-0 transition-opacity duration-500">
+      <button
+        id="music-toggle"
+        class="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-xl hover:bg-white transition-all duration-300 music-pulse"
+        onclick="toggleMusic()"
+        title="Klik untuk play/pause"
+      >
+        <svg id="play-icon" class="w-7 h-7 text-pink-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        <svg id="pause-icon" class="w-7 h-7 text-pink-500 hidden" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+      </button>
+      <div class="mt-3 bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-xl" id="volume-control">
+        <p class="text-xs text-gray-600 mb-1 text-center">Volume</p>
+        <input 
+          type="range" 
+          min="0" 
+          max="1" 
+          step="0.1" 
+          value="0.6"
+          class="w-32"
+          oninput="changeVolume(this.value)"
+          title="Atur volume"
+        >
+      </div>
+    </div>
+
+    <!-- Splash Screen / Welcome Overlay -->
+    <div id="splash-screen" class="fixed inset-0 bg-gradient-to-br from-pink-900/90 via-purple-900/80 to-blue-900/90 flex flex-col justify-center items-center z-50 p-4">
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 max-w-md w-full text-center border border-white/20 shadow-2xl animate__animated animate__zoomIn">
+        <div class="mb-6">
+          <div class="text-6xl mb-4">🎵❤️🎉</div>
+          <h1 class="text-3xl font-bold text-white mb-2">Welcome!</h1>
+          <h2 class="text-xl text-pink-200 mb-1">Pesan Spesial untuk wulan maniesz</h2>
+          <p class="text-white/80 text-sm">Happy New Year 2025</p>
+        </div>
+        
+        <div class="bg-white/20 rounded-xl p-4 mb-6 backdrop-blur-sm">
+          <p class="text-white mb-3">Untuk pengalaman terbaik, halaman ini dilengkapi dengan musik latar yang indah, seindah kamu</p>
+          <div class="flex items-center justify-center mb-2">
+            <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center mr-3">
+              <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+              </svg>
+            </div>
+            <span class="text-white font-medium">"Glue Song - beabadoobee ft. Clairo"</span>
+          </div>
+          <p class="text-white/70 text-sm">Klik tombol di bawah untuk memulai pengalaman dengan musik</p>
+        </div>
+        
+        <button
+          id="start-btn"
+          onclick="startExperience()"
+          class="p-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl hover:from-pink-600 hover:to-purple-700 transition-all duration-300 w-full text-lg font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 animate__animated animate__pulse animate__infinite"
+        >
+          🎶 BUKA PESAN & PUTAR MUSIK 🎶
+        </button>
+        
+        <div class="mt-6 pt-4 border-t border-white/20">
+          <p class="text-white/60 text-sm">
+            <span class="inline-block animate-bounce">👇</span>
+            <br>Jika musik tidak otomatis play, klik tombol play di pojok kanan atas ya cinta
+          </p>
+        </div>
+      </div>
+      
+      <!-- Footer watermark -->
+      <div class="absolute bottom-4 text-center">
+        <p class="text-white/50 text-sm">Dibuat dengan ❤️ oleh Shineeei</p>
+      </div>
+    </div>
+
+    <!-- Main Card (awalnya tersembunyi) -->
+    <div
+      id="main-card"
+      class="bg-white/95 backdrop-blur-sm border-4 border-white/50 shadow-2xl shadow-blue-500/30 rounded-2xl text-center animate__animated animate__backInDown m-4 w-full max-w-md hidden"
+    >
+      <div class="px-6 py-8">
+        <h1 class="text-4xl font-bold text-gray-800">Happy New Year</h1>
+        <h1
+          class="text-5xl text-pink-500 font-bold mt-2 animate__animated animate__pulse animate__infinite"
+        >
+          Wulan Manieeszz
+        </h1>
+        <div class="mt-6">
+          <button
+            onclick="openFirstMessage()"
+            class="p-4 bg-gradient-to-r from-blue-400 to-blue-600 text-white rounded-xl hover:from-blue-500 hover:to-blue-700 transition-all duration-300 w-full text-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 animate__animated animate__delay-1s animate__tada"
+          >
+            Klik Disini  manieszz!! ✨
+          </button>
+        </div>
+        <div class="mt-6 text-gray-500 text-sm">
+          <p>🎵 Musik sedang diputar: <span id="song-title">Glue Song</span></p>
+          <p class="mt-1">🔊 Klik ikon di pojok kanan atas untuk kontrol</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
+    <script>
+      // ==================== VARIABLES ====================
+      const audio = document.getElementById('background-music');
+      const playIcon = document.getElementById('play-icon');
+      const pauseIcon = document.getElementById('pause-icon');
+      const musicControls = document.getElementById('music-controls');
+      const splashScreen = document.getElementById('splash-screen');
+      const mainCard = document.getElementById('main-card');
+      const startBtn = document.getElementById('start-btn');
+      
+      let currentPage = 1;
+      let hasUserInteracted = false;
+      
+      // ==================== MUSIC FUNCTIONS ====================
+      
+      // Fungsi utama untuk memulai pengalaman
+      function startExperience() {
+        console.log("User mengklik untuk memulai pengalaman");
+        
+        // 1. Tandai bahwa user sudah berinteraksi
+        hasUserInteracted = true;
+        
+        // 2. Coba putar musik dengan berbagai strategi
+        playMusicWithStrategies();
+        
+        // 3. Tampilkan confetti
+        showWelcomeConfetti();
+        
+        // 4. Animasi transisi dari splash screen ke main card
+        animateTransition();
+        
+        // 5. Tampilkan kontrol musik dengan efek
+        setTimeout(() => {
+          musicControls.classList.remove('opacity-0');
+          musicControls.classList.add('opacity-100');
+        }, 1000);
+      }
+      
+      // Multi-strategi untuk memutar musik
+      function playMusicWithStrategies() {
+        console.log("Mencoba memutar musik dengan berbagai strategi...");
+        
+        // STRATEGI 1: Coba play langsung
+        const tryDirectPlay = () => {
+          audio.play()
+            .then(() => {
+              console.log("🎵 Strategi 1 berhasil: Musik diputar langsung");
+              updateMusicUI(true);
+            })
+            .catch(error1 => {
+              console.log("❌ Strategi 1 gagal:", error1.message);
+              
+              // STRATEGI 2: Set volume ke 0 dulu, lalu play, lalu naikkan volume perlahan
+              const originalVolume = audio.volume;
+              audio.volume = 0.1;
+              
+              audio.play()
+                .then(() => {
+                  console.log("🎵 Strategi 2 berhasil: Musik diputar dengan volume rendah");
+                  updateMusicUI(true);
+                  
+                  // Naikkan volume secara bertahap
+                  let vol = 0.1;
+                  const fadeIn = setInterval(() => {
+                    if (vol < originalVolume) {
+                      vol += 0.05;
+                      audio.volume = vol;
+                    } else {
+                      clearInterval(fadeIn);
+                    }
+                  }, 100);
+                })
+                .catch(error2 => {
+                  console.log("❌ Strategi 2 gagal:", error2.message);
+                  audio.volume = originalVolume;
+                  
+                  // STRATEGI 3: Tunggu sedikit lalu coba lagi
+                  setTimeout(() => {
+                    audio.play()
+                      .then(() => {
+                        console.log("🎵 Strategi 3 berhasil: Musik diputar setelah timeout");
+                        updateMusicUI(true);
+                      })
+                      .catch(error3 => {
+                        console.log("❌ Strategi 3 gagal:", error3.message);
+                        showMusicHelp();
+                      });
+                  }, 300);
+                });
+            });
+        };
+        
+        // Mulai dengan strategi pertama
+        tryDirectPlay();
+      }
+      
+      // Update UI musik
+      function updateMusicUI(isPlaying) {
+        if (isPlaying) {
+          playIcon.classList.add('hidden');
+          pauseIcon.classList.remove('hidden');
+          document.getElementById('music-toggle').classList.remove('music-pulse');
+        } else {
+          playIcon.classList.remove('hidden');
+          pauseIcon.classList.add('hidden');
+          document.getElementById('music-toggle').classList.add('music-pulse');
+        }
+      }
+      
+      // Toggle musik manual
+      function toggleMusic() {
+        if (audio.paused) {
+          audio.play()
+            .then(() => {
+              updateMusicUI(true);
+              showMiniConfetti('🎶');
+            })
+            .catch(err => {
+              console.log("Gagal memutar musik:", err);
+            });
+        } else {
+          audio.pause();
+          updateMusicUI(false);
+        }
+      }
+      
+      // Ubah volume
+      function changeVolume(value) {
+        audio.volume = parseFloat(value);
+        
+        // Feedback visual untuk volume
+        const btn = document.getElementById('music-toggle');
+        btn.style.transform = `scale(${0.9 + (value * 0.2)})`;
+        setTimeout(() => {
+          btn.style.transform = 'scale(1)';
+        }, 200);
+      }
+      
+      // ==================== ANIMATION FUNCTIONS ====================
+      
+      // Animasi transisi
+      function animateTransition() {
+        // Animasi keluar untuk splash screen
+        splashScreen.classList.add('animate__animated', 'animate__fadeOut');
+        
+        setTimeout(() => {
+          splashScreen.style.display = 'none';
+          
+          // Animasi masuk untuk main card
+          mainCard.classList.remove('hidden');
+          mainCard.classList.add('animate__animated', 'animate__fadeIn');
+          
+          // Tambahkan efek confetti
+          confetti({
+            particleCount: 80,
+            spread: 60,
+            origin: { y: 0.8 },
+            colors: ['#ff69b4', '#ff1493', '#ffc0cb']
+          });
+        }, 500);
+      }
+      
+      // Confetti sambutan
+      function showWelcomeConfetti() {
+        // Multiple confetti bursts
+        confetti({
+          particleCount: 150,
+          spread: 100,
+          origin: { y: 0.6 },
+          colors: ['#ff0000', '#ff69b4', '#00ff00', '#ffff00']
+        });
+        
+        setTimeout(() => {
+          confetti({
+            particleCount: 100,
+            angle: 60,
+            spread: 80,
+            origin: { x: 0 },
+            colors: ['#ff1493', '#9400d3', '#4b0082']
+          });
+          
+          confetti({
+            particleCount: 100,
+            angle: 120,
+            spread: 80,
+            origin: { x: 1 },
+            colors: ['#00bfff', '#1e90ff', '#0000ff']
+          });
+        }, 250);
+      }
+      
+      // Mini confetti untuk feedback
+      function showMiniConfetti(emoji) {
+        confetti({
+          particleCount: 30,
+          spread: 40,
+          origin: { y: 0.9 },
+          scalar: 0.8,
+          shapes: ['emoji'],
+          shapeOptions: {
+            emoji: {
+              value: [emoji]
+            }
+          }
+        });
+      }
+      
+      // ==================== CARD FUNCTIONS ====================
+      
+      function openFirstMessage() {
+        currentPage = 1;
+        ubahKartu();
+      }
+      
+      function ubahKartu() {
+        const cardContent = document.getElementById('main-card');
+        
+        if (currentPage === 1) {
+          // Page 1: Pesan Tahun Baru
+          cardContent.innerHTML = `
+            <div class="px-6 py-8">
+              <h1 class="font-bold text-2xl text-pink-500 animate__animated animate__zoomIn mb-4">
+                💌 Message for You 💌
+              </h1>
+              
+              <div class="text-left text-sm animate__animated animate__fadeIn overflow-y-auto max-h-72 p-3 bg-gradient-to-b from-pink-50 to-white rounded-xl shadow-inner">
+                <p class="mb-3 p-3 bg-white/50 rounded-lg">Hai!! Semangat ngejalanin harinya untuk tahun depan yaa, tetep jaga kesehatan juga.</p>
+                <p class="mb-3 p-3 bg-white/50 rounded-lg">Kalo cape boleh ngeluh kok tapi jangan lama-lama, ayoo bahagia terus, kamu gabole sedih yaa!!</p>
+                <p class="mb-3 p-3 bg-white/50 rounded-lg">Ucapin terimakasih untuk diri sendiri karna hal yang diluar kemampuan batas kamu itu berharga loh, mungkin kamu nggak nyangka diri kmu bisa sehebat ini.</p>
+                <p class="mb-3 p-3 bg-white/50 rounded-lg">Kamu pantas untuk mendapatkan ini semua loh, tuhan telah memberikan semua ini berkat kamu sudah menjadi baik ke orang lain, ini adalah sebuah hasil yang kamu tabur selama satu tahun ini.</p>
+                <p class="mb-3 p-3 bg-white/50 rounded-lg">Jangan khawatir untuk melangkah dan maju ke depan i'm always support you, aku akan selalu ada di setiap langkahmu hehe.</p>
+                <p class="mb-3 p-3 bg-white/50 rounded-lg">Ayoo jangan takut it's gonna be alright kalo kmu lagi butuh someone untuk kmu jadiin tempat cerita ataupun senderan, i'm heree! Jadi kamu tidaa sendiri lagi!!</p>
+                <p class="mb-3 p-3 bg-white/50 rounded-lg">Meskipun tahun ini tak seindah yang kamu inginkan, tetap bahagia, aku akan selalu berdoa untuk kelancaran dan kemudahan di setiap langkahmu</p>
+                <p class="mb-3 p-3 bg-white/50 rounded-lg">Jangan pernah mengubah diri kamu cuma buat menuhin perkataan orang lain!! I'm sure you can do it!!</p>
+                <p class="mb-3 p-3 bg-pink-50 border border-pink-200 rounded-lg font-medium">Thank you very much, you have given everything to me hehe maybe i have a flower for you, as always bulannya akan selalu cantik mwehehe..</p>
+              </div>
+              
+              <h2 class="mt-6 text-gray-600 animate__animated animate__fadeIn">
+                - Dari : Shinnei ❤️ -
+              </h2>
+              
+              <div class="mt-6">
+                <button
+                  onclick="openSecondMessage()"
+                  class="p-3 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-xl hover:from-pink-600 hover:to-red-600 transition-all duration-300 w-full text-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 animate__animated animate__delay-1s animate__tada"
+                >
+                  Lanjut Baca ❤️
+                </button>
+              </div>
+            </div>
+          `;
+        } else if (currentPage === 2) {
+          // Page 2: Pesan Cinta
+          cardContent.innerHTML = `
+            <div class="px-6 py-8">
+              <h1 class="font-bold text-2xl text-red-500 animate__animated animate__zoomIn mb-4">
+                💖 For My Wulan 💖
+              </h1>
+              
+              <div class="text-left text-sm animate__animated animate__fadeIn overflow-y-auto max-h-72 p-3 bg-gradient-to-b from-red-50 to-white rounded-xl shadow-inner">
+                <p class="mb-3 p-3 bg-white/70 rounded-lg border-l-4 border-pink-400">Setiap usaha kecil yang kamu lakukan untuk orang lain, setiap perhatian yang kamu berikan, semua itu tidak sia-sia.</p>
+                <p class="mb-3 p-3 bg-white/70 rounded-lg border-l-4 border-pink-400">Tapi jangan lupa, kamu juga pantas mendapatkan perhatian dan kebaikan yang sama. You deserve the world, my love.</p>
+                <p class="mb-3 p-3 bg-white/70 rounded-lg border-l-4 border-pink-400">Kamu yang selalu memastikan orang lain baik-baik saja, sekarang giliranmu. Aku di sini untuk memastikan KAMU baik-baik saja.</p>
+                <p class="mb-3 p-3 bg-white/70 rounded-lg border-l-4 border-pink-400">Tidak apa mengambil jeda, tidak apa berkata "tidak", tidak apa memprioritaskan diri sendiri. Your heart matters too.</p>
+                <p class="mb-3 p-3 bg-white/70 rounded-lg border-l-4 border-pink-400">Aku mengerti perasaanmu yang selalu bertanya, "Sudah cukup baikkah aku?" "Apakah aku sudah berusaha maksimal?".</p>
+                <p class="mb-3 p-3 bg-white/70 rounded-lg border-l-4 border-pink-400">cinta, izinkan aku menjawab: Ya, kamu sudah lebih dari cukup. Ya, usahamu sangat berarti. Dan ya, aku melihat semuanya. I see you, I appreciate you,.</p>
+                <div class="mb-3 p-4 bg-gradient-to-r from-pink-100 to-red-100 rounded-xl border border-pink-300 text-center">
+                  <p class="font-bold text-lg text-pink-600 animate__animated animate__pulse animate__infinite">
+                    💕Let's grow even more next year.💕
+                  </p>
+                </div>
+              </div>
+              
+              <h2 class="mt-6 text-gray-600 animate__animated animate__fadeIn">
+                - Forever Yours, Shinnei 💘 -
+              </h2>
+              
+              <div class="flex gap-3 mt-6">
+                <button
+                  onclick="openFirstMessage()"
+                  class="p-3 bg-gradient-to-r from-blue-400 to-blue-600 text-white rounded-xl hover:from-blue-500 hover:to-blue-700 transition-all duration-300 flex-1 font-semibold shadow hover:shadow-lg"
+                >
+                  ← Kembali
+                </button>
+                <button
+                  onclick="refreshPage()"
+                  class="p-3 bg-gradient-to-r from-gray-600 to-gray-800 text-white rounded-xl hover:from-gray-700 hover:to-gray-900 transition-all duration-300 flex-1 font-semibold shadow hover:shadow-lg"
+                >
+                  Tutup 🎀
+                </button>
+              </div>
+            </div>
+          `;
+          
+          // Special confetti for love page
+          showLoveConfetti();
+        }
+      }
+      
+      function openSecondMessage() {
+        currentPage = 2;
+        ubahKartu();
+      }
+      
+      function showLoveConfetti() {
+        // Heart-shaped confetti
+        confetti({
+          particleCount: 150,
+          spread: 100,
+          origin: { y: 0.6 },
+          colors: ['#ff69b4', '#ff1493', '#dc143c', '#ffc0cb'],
+          shapes: ['heart']
+        });
+        
+        // Emoji confetti
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            spread: 70,
+            origin: { y: 0.5 },
+            shapes: ['emoji'],
+            shapeOptions: {
+              emoji: {
+                value: ['❤️', '💖', '💕', '💘', '💝']
+              }
+            }
+          });
+        }, 300);
+      }
+      
+      function showMusicHelp() {
+        // Tambahkan instruksi jika musik tidak bisa diputar
+        const helpDiv = document.createElement('div');
+        helpDiv.className = 'fixed bottom-4 left-4 right-4 bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded-lg shadow-lg z-40 animate__animated animate__fadeInUp';
+        helpDiv.innerHTML = `
+          <div class="flex items-center">
+            <div class="text-yellow-600 mr-3">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm text-yellow-800">Jika musik tidak otomatis play, klik tombol <span class="font-bold">🎵</span> di pojok kanan atas</p>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="text-yellow-600 hover:text-yellow-800">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              </svg>
+            </button>
+          </div>
+        `;
+        document.body.appendChild(helpDiv);
+        
+        // Hapus setelah 10 detik
+        setTimeout(() => {
+          if (helpDiv.parentElement) {
+            helpDiv.remove();
+          }
+        }, 10000);
+      }
+      
+      function refreshPage() {
+        location.reload();
+      }
+      
+      // ==================== EVENT LISTENERS ====================
+      
+      // Coba autoplay saat halaman dimuat (berhasil di beberapa kondisi)
+      window.addEventListener('load', function() {
+        console.log("Halaman dimuat, menyiapkan audio...");
+        // Preload audio
+        audio.load();
+        
+        // Set volume default
+        audio.volume = 0.6;
+      });
+      
+      // Coba autoplay jika user mengklik di mana saja (fallback)
+      document.addEventListener('click', function() {
+        if (!hasUserInteracted && audio.paused) {
+          console.log("User mengklik halaman, mencoba memutar musik...");
+          hasUserInteracted = true;
+          
+          // Tunggu sedikit lalu coba play
+          setTimeout(() => {
+            audio.play().then(() => {
+              updateMusicUI(true);
+              console.log("Musik diputar setelah klik di halaman");
+            }).catch(e => {
+              console.log("Masih gagal setelah klik:", e.message);
+            });
+          }, 100);
+        }
+      }, { once: true }); // Hanya sekali
+      
+      // ==================== INITIALIZATION ====================
+      
+      console.log("🎵 Happy New Year Card siap!");
+      console.log("Tips: User perlu mengklik tombol 'Buka Pesan' untuk memulai musik");
+      
+    </script>
+  </body>
+</html>
